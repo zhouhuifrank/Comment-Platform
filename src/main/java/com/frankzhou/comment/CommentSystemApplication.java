@@ -1,9 +1,17 @@
 package com.frankzhou.comment;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * @author This.FrankZhou
+ * @version 1.0
+ * @description 点评系统主启动类
+ * @date 2023-01-14
+ */
 @SpringBootApplication
+@MapperScan(basePackages = "com.frankzhou.comment.mapper")
 public class CommentSystemApplication {
 
     public static void main(String[] args) {
