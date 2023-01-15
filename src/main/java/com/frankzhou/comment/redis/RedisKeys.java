@@ -7,4 +7,12 @@ package com.frankzhou.comment.redis;
  * @date 2023-01-14
  */
 public class RedisKeys {
+
+    public static final String LOGIN_CODE_KEY = "login:code:";
+
+    public static final Long LOGIN_CODE_TTL = 2L;
+
+    public static final String LOGIN_USER_KEY = "login:user:";
+
+    public static final Long LOGIN_USER_TTL = 30L;
 }

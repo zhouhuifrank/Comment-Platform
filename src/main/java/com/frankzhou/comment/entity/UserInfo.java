@@ -21,7 +21,7 @@ import java.util.Date;
 public class UserInfo implements Serializable {
     private static final Long serialVersionUID = 123888214L;
 
-    @TableId(value = "user_id", type = IdType.AUTO)
+    @TableId(value = "userId", type = IdType.AUTO)
     private Long userId;
 
     @TableField(value = "city")
@@ -48,9 +48,9 @@ public class UserInfo implements Serializable {
     @TableField(value = "level")
     private Integer level;
 
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "createTime", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-    @TableField(value = "update_tine", fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "updateTime", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 }
