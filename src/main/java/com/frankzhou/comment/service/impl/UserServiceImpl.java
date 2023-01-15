@@ -10,15 +10,14 @@ import com.frankzhou.comment.common.ResultDTO;
 import com.frankzhou.comment.common.constants.ErrorResultConstants;
 import com.frankzhou.comment.common.constants.SystemConstants;
 import com.frankzhou.comment.dto.LoginDTO;
+import com.frankzhou.comment.dto.RegisterDTO;
 import com.frankzhou.comment.dto.UserDTO;
 import com.frankzhou.comment.entity.User;
 import com.frankzhou.comment.mapper.UserMapper;
 import com.frankzhou.comment.redis.RedisKeys;
 import com.frankzhou.comment.service.IUserService;
 import com.frankzhou.comment.util.RegexUtils;
-import com.frankzhou.comment.util.UserLocal;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -109,6 +108,32 @@ public class UserServiceImpl implements IUserService {
         // 将token返回给前端
         return ResultDTO.getSuccessResult(token);
     }
+
+    @Override
+    public ResultDTO<String> loginByPassword(LoginDTO loginDTO, HttpSession session) {
+        return null;
+    }
+
+    @Override
+    public ResultDTO<Boolean> register(RegisterDTO registerDTO) {
+        return null;
+    }
+
+    @Override
+    public ResultDTO<Boolean> forgetPassword(RegisterDTO registerDTO) {
+        return null;
+    }
+
+    @Override
+    public ResultDTO<UserDTO> getMe() {
+        return null;
+    }
+
+    @Override
+    public ResultDTO<User> getUserById(Long userId) {
+        return null;
+    }
+
 
     private User createUserWithPhone(String phone) {
         User user = new User();

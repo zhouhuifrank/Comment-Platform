@@ -1,5 +1,7 @@
 package com.frankzhou.comment.service.impl;
 
+import com.frankzhou.comment.common.ResultDTO;
+import com.frankzhou.comment.entity.UserInfo;
 import com.frankzhou.comment.service.IUserInfoService;
 import org.springframework.stereotype.Service;
 
@@ -11,4 +13,23 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserInfoServiceImpl implements IUserInfoService {
+    @Override
+    public ResultDTO<UserInfo> getUserInfoById(Long userId) {
+        return null;
+    }
+
+    @Override
+    public ResultDTO<Boolean> updateUserInfo(UserInfo userInfo) {
+        return null;
+    }
+
+    @Override
+    public ResultDTO<Boolean> deleteUserInfo(Long userId) {
+        return null;
+    }
+
+    @Override
+    public ResultDTO<Boolean> addUserInfo(UserInfo userInfo) {
+        return null;
+    }
 }
