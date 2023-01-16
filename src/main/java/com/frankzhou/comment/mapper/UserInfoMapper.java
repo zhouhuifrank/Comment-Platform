@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * @author This.FrankZhou
  * @version 1.0
- * @description
+ * @description 用户详细信息mapper sql
  * @date 2023-01-14
  */
 @Mapper
