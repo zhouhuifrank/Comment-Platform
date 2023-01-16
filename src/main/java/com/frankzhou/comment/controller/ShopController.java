@@ -22,8 +22,7 @@ public class ShopController {
 
     @GetMapping("/{id}")
     public ResultDTO<Shop> getShopById(@PathVariable("id") Long id) {
-        return null;
+        return shopService.getShopByIdString(id);
     }
-
 
 }

@@ -17,6 +17,7 @@ import com.frankzhou.comment.mapper.UserMapper;
 import com.frankzhou.comment.redis.RedisKeys;
 import com.frankzhou.comment.service.IUserService;
 import com.frankzhou.comment.util.RegexUtils;
+import com.frankzhou.comment.util.UserLocal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -126,7 +127,8 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ResultDTO<UserDTO> getMe() {
-        return null;
+        UserDTO targetDto = UserLocal.getUser();
+        return ResultDTO.getSuccessResult(targetDto);
     }
 
     @Override

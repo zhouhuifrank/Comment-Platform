@@ -3,6 +3,7 @@ package com.frankzhou.comment.common.interceptor;
 import cn.hutool.http.HttpStatus;
 import com.frankzhou.comment.dto.UserDTO;
 import com.frankzhou.comment.util.UserLocal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,6 +19,7 @@ import java.util.Objects;
  * @description 登录拦截器
  * @date 2023-01-14
  */
+@Slf4j
 public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
@@ -26,6 +28,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         if (Objects.isNull(userDTO)) {
             // 用户不存在，拦截
+            log.info("用户登录信息不存在,拦截");
             response.setStatus(HttpStatus.HTTP_UNAUTHORIZED);
             return false;
         }

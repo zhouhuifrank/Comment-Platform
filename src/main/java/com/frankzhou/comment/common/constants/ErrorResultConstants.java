@@ -15,4 +15,6 @@ public class ErrorResultConstants {
     public static final String PARAMS_ERROR = "参数错误";
 
     public static final String FUNCTION_NO_DEV = "功能尚未开发完成";
+
+    public static final String DB_ERROR = "数据库操作异常";
 }

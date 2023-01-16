@@ -42,10 +42,10 @@ public class Shop extends BaseEntity implements Serializable {
     private String address;
 
     @TableField(value = "x")
-    private double x;
+    private Double x;
 
     @TableField(value = "y")
-    private double y;
+    private Double y;
 
     @TableField(value = "avg_price")
     private Long avgPrice;

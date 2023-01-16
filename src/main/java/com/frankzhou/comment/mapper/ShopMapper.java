@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.frankzhou.comment.entity.Shop;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * @author This.FrankZhou
  * @version 1.0
@@ -12,4 +14,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface ShopMapper extends BaseMapper<Shop> {
+
+    List<Shop> queryShopList();
 }
