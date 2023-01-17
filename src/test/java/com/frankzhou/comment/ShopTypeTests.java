@@ -2,6 +2,8 @@ package com.frankzhou.comment;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.frankzhou.comment.common.ResultDTO;
 import com.frankzhou.comment.entity.ShopType;
 import com.frankzhou.comment.mapper.ShopTypeMapper;
 import com.frankzhou.comment.redis.RedisKeys;
@@ -59,5 +61,12 @@ public class ShopTypeTests {
         stringRedisTemplate.opsForList().leftPushAll(listKey,redisList);
 
         log.info("redis缓存成功!");
+    }
+
+    @Test
+    public void testGetShopTypeList() throws JsonProcessingException {
+        ResultDTO<List<ShopType>> shopTypeList = shopTypeService.getShopTypeList();
+        List<ShopType> resList = shopTypeList.getData();
+        resList.forEach(System.out::println);
     }
 }

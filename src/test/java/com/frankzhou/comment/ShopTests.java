@@ -40,6 +40,10 @@ public class ShopTests {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
+    private static final int HASH_INCREMENT = 0x61c88647;
+
+    private static final int HASH_LENGTH = 32;
+
     @Test
     public void testRedisShopList() {
         // 预加载商铺数据
@@ -75,6 +79,16 @@ public class ShopTests {
         System.out.println(shopMap);
         stringRedisTemplate.opsForHash().putAll(hashKey,shopMap);
         log.info("redis缓存商铺数据成功");
+    }
+
+    @Test
+    public void testFibHash() {
+        int fibHash,remainderHash;
+        for (int i=0;i<HASH_LENGTH;i++) {
+            fibHash = (i*HASH_INCREMENT+HASH_INCREMENT) & (HASH_LENGTH-1);
+            remainderHash = i % (HASH_LENGTH-1);
+            System.out.println("斐波那契散列:"+fibHash+" 普通散列:"+remainderHash);
+        }
     }
 
     @Test
