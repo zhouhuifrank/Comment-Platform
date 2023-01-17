@@ -3,6 +3,8 @@ package com.frankzhou.comment.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.frankzhou.comment.common.ResultDTO;
 import com.frankzhou.comment.entity.ShopType;
 import com.frankzhou.comment.mapper.ShopTypeMapper;
@@ -33,19 +35,21 @@ public class ShopTypeServiceImpl implements IShopTypeService {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
+    private static final ObjectMapper mapper = new ObjectMapper();
+
     @Override
-    public ResultDTO<List<ShopType>> getShopTypeList() {
+    public ResultDTO<List<ShopType>> getShopTypeList() throws JsonProcessingException {
         String listKey = RedisKeys.CACHE_SHOP_TYPE_KEY;
         // range函数从0~-1表示查询对应key中list的所有数据
         List<String> redisTypeList = stringRedisTemplate.opsForList().range(listKey, 0, -1);
         List<ShopType> typeList = new ArrayList<>();
-        if (CollectionUtil.isNotEmpty(redisTypeList)) {
-            // 商铺类型列表不空，转换对象返回结果
-            typeList = redisTypeList.stream().map(item -> {
-                ShopType shopType = BeanUtil.toBean(item, ShopType.class);
-                return shopType;
-            }).collect(Collectors.toList());
-            log.info("Redis缓存查询成功，店铺类型数据");
+        if (!CollectionUtil.isEmpty(redisTypeList) || redisTypeList.size() != 0) {
+            // 商铺类型列表不空，转换对象返回结果 TODO BeanUtil使用出错 转换为空值
+            for (String typeJson : redisTypeList) {
+                ShopType shopType  = mapper.readValue(typeJson, ShopType.class);
+                typeList.add(shopType);
+            }
+            log.info("Redis缓存查询成功，店铺类型列表");
             return ResultDTO.getSuccessResult(typeList);
         }
 

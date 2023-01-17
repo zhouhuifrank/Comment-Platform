@@ -28,8 +28,7 @@ public class RedisUtil {
     private boolean setExpire(final String key, final Long time, final TimeUnit unit) {
         try {
             if (time > 0) {
-                redisTemplate.expire(key, time, unit);
-                return true;
+                return redisTemplate.expire(key, time, unit);
             }
             return false;
         } catch (Exception e) {
@@ -41,8 +40,7 @@ public class RedisUtil {
     private boolean setExpire(final String key, final Long time) {
         try {
             if (time > 0) {
-                redisTemplate.expire(key, time, TimeUnit.SECONDS);
-                return true;
+                return redisTemplate.expire(key, time, TimeUnit.SECONDS);
             }
             return false;
         } catch (Exception e) {

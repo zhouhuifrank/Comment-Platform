@@ -1,5 +1,6 @@
 package com.frankzhou.comment.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.frankzhou.comment.common.ResultDTO;
 import com.frankzhou.comment.entity.ShopType;
 import com.frankzhou.comment.service.IShopTypeService;
@@ -24,7 +25,7 @@ public class ShopTypeController {
     private IShopTypeService shopTypeService;
 
     @GetMapping("/list")
-    public ResultDTO<List<ShopType>> getShopTypeList() {
-        return null;
+    public ResultDTO<List<ShopType>> getShopTypeList() throws JsonProcessingException {
+        return shopTypeService.getShopTypeList();
     }
 }

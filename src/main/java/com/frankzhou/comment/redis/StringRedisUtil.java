@@ -10,11 +10,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -37,92 +33,187 @@ public class StringRedisUtil {
     // =================通用redis操作====================
 
     private Boolean setExpire(String key, Long time, TimeUnit unit) {
-        return stringRedisTemplate.expire(key,time,unit);
+        try {
+            if (time > 0) {
+                return stringRedisTemplate.expire(key,time,unit);
+            }
+            return Boolean.FALSE;
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
+        return Boolean.FALSE;
     }
 
     private Boolean setExpire(String key, Long time) {
-        return setExpire(key,time,TimeUnit.SECONDS);
+        try {
+            if (time > 0) {
+                return stringRedisTemplate.expire(key,time,TimeUnit.SECONDS);
+            }
+            return false;
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
+        return false;
     }
 
     private Long getExpire(String key) {
-        return stringRedisTemplate.getExpire(key);
+        try {
+            return stringRedisTemplate.getExpire(key);
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
+        return null;
     }
 
     private Boolean hashKey(String key) {
-        return stringRedisTemplate.hasKey(key);
+        try {
+            return stringRedisTemplate.hasKey(key);
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
+        return Boolean.FALSE;
     }
 
     private Boolean deleteObject(String key) {
-        return stringRedisTemplate.delete(key);
+        try {
+            return stringRedisTemplate.delete(key);
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
+        return Boolean.FALSE;
     }
 
     private Long deleteObject(Collection<String> collection) {
+        try {
+            Long count = stringRedisTemplate.delete(collection);
+            return count;
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
         Long count = stringRedisTemplate.delete(collection);
-        return count == null ? 0 : count;
+        return null;
     }
 
     // =================String类型操作===================
 
     private <T> void setStringObject(String key,T value) {
-        String json = JSONUtil.toJsonStr(value);
-        stringRedisTemplate.opsForValue().set(key,json);
+        try {
+            String json = JSONUtil.toJsonStr(value);
+            stringRedisTemplate.opsForValue().set(key,json);
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
     }
 
     private <T> void setStringObject(String key,T value,Long time,TimeUnit unit) {
-        String json = JSONUtil.toJsonStr(value);
-        stringRedisTemplate.opsForValue().set(key,json,time,unit);
+        try {
+            String json = JSONUtil.toJsonStr(value);
+            stringRedisTemplate.opsForValue().set(key,json,time,unit);
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
     }
 
     private <T> T getStringObject(String key,Class<T> clazz) {
-        String json = stringRedisTemplate.opsForValue().get(key);
-        T result = BeanUtil.toBean(json, clazz);
-        return result;
+        try {
+            String json = stringRedisTemplate.opsForValue().get(key);
+            T result = BeanUtil.toBean(json, clazz);
+            return result;
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
+        return null;
     }
 
     // =================Hash类型操作======================
 
     private <T> void setHashObject(String key,T value) {
-        Map<String, Object> stringObjectMap = BeanUtil.beanToMap(value, new HashMap<>(),
-                CopyOptions.create()
-                        .setIgnoreNullValue(true)
-                        .setFieldValueEditor((k, v) -> v.toString()));
-        stringRedisTemplate.opsForHash().putAll(key,stringObjectMap);
+        try {
+            Map<String, Object> stringObjectMap = BeanUtil.beanToMap(value, new HashMap<>(),
+                    CopyOptions.create()
+                            .setIgnoreNullValue(true)
+                            .setFieldValueEditor((k, v) -> v.toString()));
+            stringRedisTemplate.opsForHash().putAll(key,stringObjectMap);
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
     }
 
     private <T> void setHashObject(String key,T value,Long time,TimeUnit unit) {
-        Map<String, Object> stringObjectMap = BeanUtil.beanToMap(value, new HashMap<>(),
-                CopyOptions.create()
-                        .setIgnoreNullValue(true)
-                        .setFieldValueEditor((k, v) -> v.toString()));
-        stringRedisTemplate.opsForHash().putAll(key,stringObjectMap);
-        stringRedisTemplate.expire(key,time,unit);
+        try {
+            Map<String, Object> stringObjectMap = BeanUtil.beanToMap(value, new HashMap<>(),
+                    CopyOptions.create()
+                            .setIgnoreNullValue(true)
+                            .setFieldValueEditor((k, v) -> v.toString()));
+            stringRedisTemplate.opsForHash().putAll(key,stringObjectMap);
+            stringRedisTemplate.expire(key,time,unit);
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
     }
 
     private <T> T getHashObject(String key,Class<T> clazz) {
-        Map<Object, Object> entries = stringRedisTemplate.opsForHash().entries(key);
-        T target = null;
         try {
-            target = clazz.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            Map<Object, Object> entries = stringRedisTemplate.opsForHash().entries(key);
+            T target = null;
+            try {
+                target = clazz.newInstance();
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            T result = BeanUtil.fillBeanWithMap(entries, target, false);
+            return result;
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
         }
-        T result = BeanUtil.fillBeanWithMap(entries, target, false);
-        return result;
+        return null;
     }
 
     // =================List类型操作======================
 
     private <T> void setListObject(String key,List<T> cacheList) {
-        List<String> stringList = cacheList.stream().map(JSONUtil::toJsonStr).collect(Collectors.toList());
+        try {
+            List<String> stringList = cacheList.stream().map(JSONUtil::toJsonStr).collect(Collectors.toList());
+            stringRedisTemplate.opsForList().leftPushAll(key,stringList);
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
+    }
 
+    private <T> void setListObject(String key,List<T> cacheList,Long time,TimeUnit unit) {
+        try {
+            List<String> stringList = cacheList.stream().map(JSONUtil::toJsonStr).collect(Collectors.toList());
+            stringRedisTemplate.opsForList().leftPushAll(key,stringList);
+            stringRedisTemplate.expire(key,time,unit);
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
+    }
+
+    private <T> List<T> getListObject(String key,Class<T> clazz) {
+        try {
+            List<T> resultList = new ArrayList<>();
+            List<String> result = stringRedisTemplate.opsForList().range(key, 0, -1);
+            for (String target : result) {
+                T t = BeanUtil.toBean(target, clazz);
+                resultList.add(t);
+            }
+            return resultList;
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
+        return null;
     }
 
     // =================Set类型操作=======================
 
     private <T> void setSetObject(String key,T value) {
-        return;
+        try {
+        } catch (Exception e) {
+            log.warn("Redis服务异常");
+        }
     }
 
     private <T> T getSetObject(String key,Class<T> clazz) {

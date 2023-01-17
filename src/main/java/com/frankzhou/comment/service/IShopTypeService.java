@@ -1,5 +1,6 @@
 package com.frankzhou.comment.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.frankzhou.comment.common.ResultDTO;
 import com.frankzhou.comment.entity.ShopType;
 
@@ -20,5 +21,5 @@ public interface IShopTypeService {
      * @author this.FrankZhou
      * @return List<ShopType> 商铺类型集合
      */
-    ResultDTO<List<ShopType>> getShopTypeList();
+    ResultDTO<List<ShopType>> getShopTypeList() throws JsonProcessingException;
 }

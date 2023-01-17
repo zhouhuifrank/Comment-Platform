@@ -47,19 +47,18 @@ public class ShopServiceImpl implements IShopService {
         if (!Objects.isNull(shopMap)) {
             // 缓存存在直接返回
             Shop shop = BeanUtil.fillBeanWithMap(shopMap, new Shop(), false);
-            log.info("店铺[{}]缓存命中,店铺信息:{}",id,JSONUtil.toJsonStr(shop));
+            log.info("店铺[{}]缓存命中,店铺信息:{}",id, JSONUtil.toJsonStr(shopMap));
             return ResultDTO.getSuccessResult(shop);
         }
 
         // 缓存不存在，查询数据库
-        LambdaQueryWrapper<Shop> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Shop::getId,id);
-        Shop dbShop = shopMapper.selectOne(wrapper);
+        Shop dbShop = shopMapper.selectById(id);
         if (Objects.isNull(dbShop)) {
+            // TODO 存在缓存击穿问题
             log.info("店铺[{}]不存在",id);
             return ResultDTO.getErrorResult("店铺"+id+"不存在");
         }
-        // 转换成map存入redis
+        // 转换成map存入redis TODO 可以替换为工具类
         Map<String, Object> redisObject = BeanUtil.beanToMap(dbShop, new HashMap<>(),
                 CopyOptions.create()
                         .setIgnoreNullValue(true)
@@ -81,7 +80,7 @@ public class ShopServiceImpl implements IShopService {
         // 缓存命中
         Shop shop = null;
         if (!Objects.isNull(shopJson)) {
-            log.info("商铺[{}]缓存命中,店铺信息:{}",id,JSONUtil.toJsonStr(shop));
+            log.info("商铺[{}]缓存命中,店铺信息:{}",id,shopJson);
             shop = BeanUtil.toBean(shopJson, Shop.class);
             return ResultDTO.getSuccessResult(shop);
         }
@@ -89,18 +88,28 @@ public class ShopServiceImpl implements IShopService {
         // 缓存不命中
         try {
             LambdaQueryWrapper<Shop> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(Shop::getId,"id");
+            wrapper.eq(Shop::getId,id);
             shop = shopMapper.selectOne(wrapper);
             if (Objects.isNull(shop)) {
                 log.info("店铺[{}]不存在",id);
                 return ResultDTO.getErrorResult("店铺"+id+"不存在");
             }
         } catch (Exception e) {
-            log.info("数据库操作异常,{}",e.toString());
+            log.info("数据库操作异常,{}",e.getMessage());
             // TODO 全局异常处理
         }
         stringRedisTemplate.opsForValue().set(shopKey,JSONUtil.toJsonStr(shop));
 
         return ResultDTO.getSuccessResult(shop);
+    }
+
+    @Override
+    public ResultDTO<Shop> getShopWithPenetrate(Long id) {
+        return null;
+    }
+
+    @Override
+    public ResultDTO<Shop> getShopWithBreakDown(Long id) {
+        return null;
     }
 }
