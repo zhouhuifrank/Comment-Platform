@@ -7,6 +7,7 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.frankzhou.comment.entity.Shop;
 import com.frankzhou.comment.mapper.ShopMapper;
+import com.frankzhou.comment.redis.RedisData;
 import com.frankzhou.comment.redis.RedisKeys;
 import com.frankzhou.comment.service.IShopService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +17,12 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 
 import javax.annotation.Resource;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author This.FrankZhou
@@ -79,6 +82,27 @@ public class ShopTests {
         System.out.println(shopMap);
         stringRedisTemplate.opsForHash().putAll(hashKey,shopMap);
         log.info("redis缓存商铺数据成功");
+    }
+
+    @Test
+    public void testSetLogicTime() {
+        String shopKey = RedisKeys.CACHE_SHOP_KEY + 1L;
+        Shop shop = shopMapper.selectById(1);
+        // shopService.setLogicTime(shopKey,shop,10L, TimeUnit.MINUTES);
+    }
+
+    @Test void testGetLogicTime() {
+        String shopKey = RedisKeys.CACHE_SHOP_KEY + 1L;
+        String result = stringRedisTemplate.opsForValue().get(shopKey);
+        RedisData data = JSONUtil.toBean(result,RedisData.class);
+        System.out.println(data);
+        LocalDateTime time = data.getExpireTime();
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(time)) {
+            System.out.println("缓存已过期");
+        } else {
+            System.out.println("缓存未过期");
+        }
     }
 
     @Test

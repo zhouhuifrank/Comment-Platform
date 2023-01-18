@@ -12,6 +12,8 @@ public class ErrorResultConstants {
 
     public static final String CODE_ERROR = "验证码错误";
 
+    public static final String SHOP_NOT_EXIST = "店铺不存在";
+
     public static final String PARAMS_ERROR = "参数错误";
 
     public static final String FUNCTION_NO_DEV = "功能尚未开发完成";
