@@ -6,6 +6,7 @@ import com.alibaba.druid.util.StringUtils;
 import com.frankzhou.comment.dto.UserDTO;
 import com.frankzhou.comment.redis.RedisKeys;
 import com.frankzhou.comment.util.UserLocal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.lang.Nullable;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  * @description Token刷新拦截器
  * @date 2023-01-14
  */
+@Slf4j
 public class RefreshTokenInterceptor implements HandlerInterceptor {
     // 这里由于拦截器没有被Spring管理，因此不同注入StringRedisTemplate，需要通过构造函数传入
     private StringRedisTemplate stringRedisTemplate;
@@ -37,6 +39,7 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
         String token = request.getHeader("authorization");
         if (StringUtils.isEmpty(token)) {
             // 放行不刷新token
+            log.info("token不存在");
             return true;
         }
 
@@ -44,6 +47,7 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
         String tokenKey = RedisKeys.LOGIN_USER_KEY + token;
         Map<Object,Object> userMap = stringRedisTemplate.opsForHash().entries(tokenKey);
         if (MapUtil.isEmpty(userMap)) {
+            log.info("用户登录信息不存在");
             return true;
         }
 
@@ -52,6 +56,7 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
         UserLocal.setUser(userDTO);
         // 刷新StringRedisTemplate中的token
         stringRedisTemplate.expire(tokenKey, RedisKeys.LOGIN_USER_TTL, TimeUnit.MINUTES);
+        log.info("刷新token成功:{}",token);
 
         return true;
     }

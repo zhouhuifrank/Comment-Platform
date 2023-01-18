@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.frankzhou.comment.mapper.ShopTypeMapper">
+
+    <resultMap id="shopTypeMap" type="com.frankzhou.comment.entity.ShopType">
+        <id column="id" property="id" javaType="Long"/>
+        <result column="name" property="name" javaType="String"/>
+        <result column="icon" property="icon" javaType="String"/>
+        <result column="sort" property="sort" javaType="Integer"/>
+    </resultMap>
+
+    <sql id="baseColumn">
+        `id`,`name`,`icon`,`sort`
+    </sql>
+
+    <select id="queryAllShopTypeList" resultMap="shopTypeMap">
+        select
+        <include refid="baseColumn"/>
+        from tb_shop_type;
+    </select>
+
+</mapper>

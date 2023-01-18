@@ -3,6 +3,7 @@ package com.frankzhou.comment.service.impl;
 import com.frankzhou.comment.common.ResultDTO;
 import com.frankzhou.comment.entity.UserInfo;
 import com.frankzhou.comment.service.IUserInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
  * @description 用户信息接口实现类
  * @date 2023-01-14
  */
+@Slf4j
 @Service
 public class UserInfoServiceImpl implements IUserInfoService {
     @Override

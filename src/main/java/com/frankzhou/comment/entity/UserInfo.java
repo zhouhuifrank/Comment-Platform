@@ -10,7 +10,7 @@ import java.util.Date;
 /**
  * @author This.FrankZhou
  * @version 1.0
- * @description 用户登录信息表
+ * @description 用户详细信息表
  * @date 2023-01-14
  */
 @Data
@@ -18,7 +18,7 @@ import java.util.Date;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @TableName(value = "tb_user_info")
-public class UserInfo implements Serializable {
+public class UserInfo extends BaseEntity implements Serializable {
     private static final Long serialVersionUID = 123888214L;
 
     @TableId(value = "userId", type = IdType.AUTO)
@@ -48,9 +48,6 @@ public class UserInfo implements Serializable {
     @TableField(value = "level")
     private Integer level;
 
-    @TableField(value = "createTime", fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
-
-    @TableField(value = "updateTime", fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updateTime;
+    @TableField(value = "status", fill = FieldFill.INSERT)
+    private String status;
 }
