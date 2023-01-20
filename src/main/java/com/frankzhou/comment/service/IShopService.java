@@ -3,6 +3,8 @@ package com.frankzhou.comment.service;
 import com.frankzhou.comment.common.ResultDTO;
 import com.frankzhou.comment.entity.Shop;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author This.FrankZhou
  * @version 1.0
@@ -10,6 +12,15 @@ import com.frankzhou.comment.entity.Shop;
  * @date 2023-01-15
  */
 public interface IShopService {
+
+    /**
+     * 更新商铺 先更新数据库，再删除缓存
+     *
+     * @author this.FrankZhou
+     * @param shop 店铺信息
+     * @return true->成功/false->失败
+     */
+    ResultDTO<Boolean> updateShop(Shop shop);
 
     /**
      * 通过id查询商铺并存入Redis缓存 Hash
@@ -43,11 +54,22 @@ public interface IShopService {
 
     /**
      * 通过id查询商铺并存入Redis缓存 String
-     * 手动更新+设置TTL过期时间解决数据一致性 解决缓存击穿 设置随机TTL时间解决大量key同时失效问题
+     * 手动更新+设置TTL过期时间解决数据一致性 使用互斥锁解决缓存击穿 设置随机TTL时间解决大量key同时失效问题
      *
      * @author this.FrankZhou
      * @param id 商铺id
      * @return Shop
      */
-    ResultDTO<Shop> getShopWithBreakDown(Long id);
+    ResultDTO<Shop> getShopWithMutex(Long id);
+
+    /**
+     * 通过id查询商铺并存入Redis缓存 String
+     * 手动更新+设置TTL过期时间解决数据一致性 设置逻辑过期时间解决缓存击穿 设置随机TTL时间解决大量key同时失效问题
+     *
+     * @author this.FrankZhou
+     * @param id 店铺id
+     * @return Shop
+     */
+    ResultDTO<Shop> getShopWithLogicTime(Long id);
+
 }
