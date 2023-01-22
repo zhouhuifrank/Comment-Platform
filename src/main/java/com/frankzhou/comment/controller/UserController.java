@@ -30,29 +30,16 @@ public class UserController {
     @Resource
     private IUserInfoService userInfoService;
 
+    // --------------------------前端页面接口-------------------------
+
     @PostMapping("/code")
-    public ResultDTO<Boolean> sendCode(@RequestParam("phone") String phone, HttpSession session) {
-        return userService.sendCode(phone,session);
+    public ResultDTO<Boolean> sendCode(@RequestParam("phone") String phone) {
+        return userService.sendCode(phone);
     }
 
     @PostMapping("/login")
-    public ResultDTO<String> login(@RequestBody LoginDTO loginDTO, HttpSession session) {
-        return userService.login(loginDTO,session);
-    }
-
-    @PostMapping("/loginByPassword")
-    public ResultDTO<String> loginByPassword(@RequestBody LoginDTO loginDTO, HttpSession session) {
-        return userService.loginByPassword(loginDTO,session);
-    }
-
-    @PostMapping("/register")
-    public ResultDTO<Boolean> register(@RequestBody RegisterDTO registerDTO) {
-        return userService.register(registerDTO);
-    }
-
-    @PostMapping("/forgetPassword")
-    public ResultDTO<Boolean> forgetPassword(@RequestBody RegisterDTO registerDTO) {
-        return userService.forgetPassword(registerDTO);
+    public ResultDTO<String> login(@RequestBody LoginDTO loginDTO) {
+        return userService.login(loginDTO);
     }
 
     @PostMapping("/logout")
@@ -75,5 +62,21 @@ public class UserController {
         return userService.getUserById(userId);
     }
 
+    // -------------------------后台管理系统接口------------------------
+
+    @PostMapping("/loginByPassword")
+    public ResultDTO<String> loginByPassword(@RequestBody LoginDTO loginDTO) {
+        return userService.loginByPassword(loginDTO);
+    }
+
+    @PostMapping("/register")
+    public ResultDTO<Boolean> register(@RequestBody RegisterDTO registerDTO) {
+        return userService.register(registerDTO);
+    }
+
+    @PostMapping("/forgetPassword")
+    public ResultDTO<Boolean> forgetPassword(@RequestBody RegisterDTO registerDTO) {
+        return userService.forgetPassword(registerDTO);
+    }
 
 }

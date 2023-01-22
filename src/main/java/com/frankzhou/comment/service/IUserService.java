@@ -25,7 +25,7 @@ public interface IUserService {
      * @param session 服务端session
      * @return ResultDTO
      */
-    ResultDTO<Boolean> sendCode(String phone, HttpSession session);
+    ResultDTO<Boolean> sendCode(String phone);
 
     /**
      * 用户登录 手机号+验证码登录
@@ -35,7 +35,7 @@ public interface IUserService {
      * @param session 服务端session
      * @return token 返回生成的token
      */
-    ResultDTO<String> login(LoginDTO loginDTO, HttpSession session);
+    ResultDTO<String> login(LoginDTO loginDTO);
 
     /**
      * 用户登录 手机号+密码登录
@@ -45,7 +45,7 @@ public interface IUserService {
      * @param session 服务端session
      * @return token 返回生成的token
      */
-    ResultDTO<String> loginByPassword(LoginDTO loginDTO, HttpSession session);
+    ResultDTO<String> loginByPassword(LoginDTO loginDTO);
 
     /**
      * 用户注册

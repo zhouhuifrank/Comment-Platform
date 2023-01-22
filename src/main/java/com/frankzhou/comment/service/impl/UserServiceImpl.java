@@ -46,7 +46,7 @@ public class UserServiceImpl implements IUserService {
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
-    public ResultDTO<Boolean> sendCode(String phone, HttpSession session) {
+    public ResultDTO<Boolean> sendCode(String phone) {
         // 校验手机号
         if (StringUtils.isEmpty(phone) || RegexUtils.phoneIsInvalid(phone)) {
             return ResultDTO.getErrorResult(ErrorResultConstants.PHONE_IS_INVALID);
@@ -64,7 +64,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public ResultDTO<String> login(LoginDTO loginDTO, HttpSession session) {
+    public ResultDTO<String> login(LoginDTO loginDTO) {
         if (Objects.isNull(loginDTO)) {
             return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);
         }
@@ -111,21 +111,6 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public ResultDTO<String> loginByPassword(LoginDTO loginDTO, HttpSession session) {
-        return null;
-    }
-
-    @Override
-    public ResultDTO<Boolean> register(RegisterDTO registerDTO) {
-        return null;
-    }
-
-    @Override
-    public ResultDTO<Boolean> forgetPassword(RegisterDTO registerDTO) {
-        return null;
-    }
-
-    @Override
     public ResultDTO<UserDTO> getMe() {
         UserDTO targetDto = UserLocal.getUser();
         return ResultDTO.getSuccessResult(targetDto);
@@ -136,6 +121,24 @@ public class UserServiceImpl implements IUserService {
         return null;
     }
 
+
+    @Override
+    public ResultDTO<String> loginByPassword(LoginDTO loginDTO) {
+        return null;
+    }
+
+    @Override
+    public ResultDTO<Boolean> register(RegisterDTO registerDTO) {
+        String phone = registerDTO.getPhone();
+        String password = registerDTO.getPhone();
+
+        return null;
+    }
+
+    @Override
+    public ResultDTO<Boolean> forgetPassword(RegisterDTO registerDTO) {
+        return null;
+    }
 
     private User createUserWithPhone(String phone) {
         User user = new User();

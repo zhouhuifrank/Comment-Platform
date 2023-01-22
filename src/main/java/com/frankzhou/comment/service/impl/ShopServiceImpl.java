@@ -56,7 +56,7 @@ public class ShopServiceImpl implements IShopService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultDTO<Boolean> updateShop(Shop shop) {
+    public ResultDTO<Long> updateShop(Shop shop) {
         Long id = shop.getId();
         if (Objects.isNull(id)) {
             return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);
@@ -72,7 +72,7 @@ public class ShopServiceImpl implements IShopService {
         String shopKey = RedisKeys.CACHE_SHOP_KEY + id;
         stringRedisTemplate.delete(shopKey);
 
-        return ResultDTO.getSuccessResult(Boolean.TRUE);
+        return ResultDTO.getSuccessResult(id);
     }
 
     @Override

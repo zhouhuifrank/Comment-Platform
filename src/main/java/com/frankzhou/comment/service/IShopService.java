@@ -18,9 +18,9 @@ public interface IShopService {
      *
      * @author this.FrankZhou
      * @param shop 店铺信息
-     * @return true->成功/false->失败
+     * @return Long 店铺id
      */
-    ResultDTO<Boolean> updateShop(Shop shop);
+    ResultDTO<Long> updateShop(Shop shop);
 
     /**
      * 通过id查询商铺并存入Redis缓存 Hash
