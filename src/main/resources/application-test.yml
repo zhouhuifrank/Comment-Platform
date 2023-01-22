@@ -30,10 +30,10 @@ spring:
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
 
   redis:
-    host: 127.0.0.1
+    host: 192.168.10.130
     port: 6379
     password: monv205850
-    database: 2
+    database: 0
     lettuce:
       pool:
         max-active: 8   # 最大连接数
