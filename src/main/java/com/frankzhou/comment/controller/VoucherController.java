@@ -1,7 +1,10 @@
 package com.frankzhou.comment.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.frankzhou.comment.common.ResultDTO;
+import com.frankzhou.comment.entity.Voucher;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author This.FrankZhou
@@ -13,5 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/voucher")
 public class VoucherController {
 
+    @PostMapping("/addSeckill")
+    public ResultDTO<Long> addSecKillVoucher(@RequestBody Voucher voucher) {
+        return null;
+    }
 
+    @PostMapping("/addVoucher")
+    public ResultDTO<Long> addVoucher(@RequestBody Voucher voucher) {
+        return null;
+    }
+
+    @GetMapping("/list/{id}")
+    public ResultDTO<List<Voucher>> getVoucherList(@PathVariable("id") String shopId) {
+        return null;
+    }
 }
