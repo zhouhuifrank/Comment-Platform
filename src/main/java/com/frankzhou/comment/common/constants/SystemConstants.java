@@ -8,5 +8,6 @@ package com.frankzhou.comment.common.constants;
  */
 public class SystemConstants {
 
+    public static final String REQUEST_SUCCESS = "请求成功";
     public static final String USER_NAME_PREFIX = "user_";
 }

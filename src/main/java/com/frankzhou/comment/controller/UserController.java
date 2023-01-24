@@ -1,5 +1,6 @@
 package com.frankzhou.comment.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.frankzhou.comment.common.ResultDTO;
 import com.frankzhou.comment.common.constants.ErrorResultConstants;
 import com.frankzhou.comment.dto.LoginDTO;
@@ -9,6 +10,7 @@ import com.frankzhou.comment.entity.User;
 import com.frankzhou.comment.entity.UserInfo;
 import com.frankzhou.comment.service.IUserInfoService;
 import com.frankzhou.comment.service.IUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -20,6 +22,7 @@ import javax.servlet.http.HttpSession;
  * @description 用户管理: 登录、验证码、注销、用户校验、返回用户信息
  * @date 2023-01-14
  */
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -77,6 +80,11 @@ public class UserController {
     @PostMapping("/forgetPassword")
     public ResultDTO<Boolean> forgetPassword(@RequestBody RegisterDTO registerDTO) {
         return userService.forgetPassword(registerDTO);
+    }
+
+    @PostMapping("/updateUser")
+    public ResultDTO<Boolean> updateUser(@RequestBody User user) {
+        return userService.updateUser(user);
     }
 
 }

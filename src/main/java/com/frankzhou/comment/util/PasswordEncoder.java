@@ -1,5 +1,11 @@
 package com.frankzhou.comment.util;
 
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
+import org.springframework.util.DigestUtils;
+
+import java.nio.charset.StandardCharsets;
+
 /**
  * @author This.FrankZhou
  * @version 1.0
@@ -8,5 +14,36 @@ package com.frankzhou.comment.util;
  */
 public class PasswordEncoder {
 
-    
+    public static String encode(String password) {
+        // 20位的随机盐
+        String salt = RandomUtil.randomString(20);
+
+        return encode(salt,password);
+    }
+
+    public static String encode(String salt,String password) {
+        String encodePassword = salt + "@" + DigestUtils.md5DigestAsHex((password+salt).getBytes());
+
+        return encodePassword;
+    }
+
+    public static Boolean isMatch(String rawPassword,String encodePassword) {
+        if (StrUtil.isEmpty(rawPassword) || StrUtil.isEmpty(encodePassword)) {
+            return Boolean.FALSE;
+        }
+
+        if (!encodePassword.contains("@")) {
+            return Boolean.FALSE;
+        }
+
+        // 从@salt的标记处分割出加密后的密码
+        String[] charSet = encodePassword.split("@");
+        String salt = charSet[0];
+        if (encode(salt,rawPassword).equals(encodePassword)) {
+            return Boolean.TRUE;
+        }
+
+        return Boolean.FALSE;
+    }
+
 }

@@ -22,5 +22,7 @@ public class RegisterDTO implements Serializable {
 
     private String password;
 
+    private String newPassword;
+
     private String nickName;
 }

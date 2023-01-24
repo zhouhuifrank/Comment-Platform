@@ -22,7 +22,6 @@ public interface IUserService {
      *
      * @author this.FrankZhou
      * @param phone 手机号
-     * @param session 服务端session
      * @return ResultDTO
      */
     ResultDTO<Boolean> sendCode(String phone);
@@ -32,7 +31,6 @@ public interface IUserService {
      *
      * @author this.FrankZhou
      * @param loginDTO 登录请求参数
-     * @param session 服务端session
      * @return token 返回生成的token
      */
     ResultDTO<String> login(LoginDTO loginDTO);
@@ -42,7 +40,6 @@ public interface IUserService {
      *
      * @author this.FrankZhou
      * @param loginDTO 登录请求参数
-     * @param session 服务端session
      * @return token 返回生成的token
      */
     ResultDTO<String> loginByPassword(LoginDTO loginDTO);
@@ -64,6 +61,15 @@ public interface IUserService {
      * @return Boolean true->修改成功/false->修改失败
      */
     ResultDTO<Boolean> forgetPassword(RegisterDTO registerDTO);
+
+    /**
+     * 更新用户信息
+     *
+     * @author this.FrankZhou
+     * @param user 修改后的用户信息
+     * @return Boolean true->修改成功/false->修改失败
+     */
+    ResultDTO<Boolean> updateUser(User user);
 
     /**
      * 获取用户的个人信息

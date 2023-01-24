@@ -4,6 +4,8 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.frankzhou.comment.common.ResultDTO;
@@ -16,6 +18,7 @@ import com.frankzhou.comment.entity.User;
 import com.frankzhou.comment.mapper.UserMapper;
 import com.frankzhou.comment.redis.RedisKeys;
 import com.frankzhou.comment.service.IUserService;
+import com.frankzhou.comment.util.PasswordEncoder;
 import com.frankzhou.comment.util.RegexUtils;
 import com.frankzhou.comment.util.UserLocal;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.sql.Struct;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -51,11 +55,12 @@ public class UserServiceImpl implements IUserService {
         if (StringUtils.isEmpty(phone) || RegexUtils.phoneIsInvalid(phone)) {
             return ResultDTO.getErrorResult(ErrorResultConstants.PHONE_IS_INVALID);
         }
+        log.info("UserService.sendCode=>phone:{}",phone);
 
-        // 生成验证码 hutool工具类
-        String verifyCode = RandomUtil.randomNumbers(6);
+        // 生成验证码 HuTool工具类
+        String verifyCode = RandomUtil.randomString(6);
 
-        // 在redis中存验证码并设置过期时间 使用phone来作为Key 方便从redis中取出value
+        // 在redis中存验证码并设置过期时间2分钟 使用phone来作为Key 方便从redis中取出value
         stringRedisTemplate.opsForValue().set(RedisKeys.LOGIN_CODE_KEY+phone,verifyCode,RedisKeys.LOGIN_CODE_TTL, TimeUnit.MINUTES);
 
         log.info("手机验证码发送成功, 验证码: {}",verifyCode);
@@ -68,6 +73,7 @@ public class UserServiceImpl implements IUserService {
         if (Objects.isNull(loginDTO)) {
             return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);
         }
+        log.info("UserService.login=>user:{}", JSONUtil.toJsonStr(loginDTO));
 
         // 校验手机号
         String phone = loginDTO.getPhone();
@@ -79,17 +85,19 @@ public class UserServiceImpl implements IUserService {
         String cacheCode = stringRedisTemplate.opsForValue().get(RedisKeys.LOGIN_CODE_KEY+phone);
         if (!cacheCode.equals(loginDTO.getCode()) || Objects.isNull(cacheCode)) {
             // 验证码不正确
+            log.info("UserService.login verify code is error");
             return ResultDTO.getErrorResult(ErrorResultConstants.CODE_ERROR);
         }
 
         // 根据手机号查找用户
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>();
-        wrapper.eq(User::getPhone,phone);
+        wrapper.eq(User::getPhone,phone).eq(User::getStatus,"NORMAL");
         User user = userMapper.selectOne(wrapper);
         if (Objects.isNull(user)) {
             // 根据手机号创建一个用户
             user = createUserWithPhone(phone);
         }
+        log.info("UserService.login user login success=>user:{}",JSONUtil.toJsonStr(user));
 
         // 保存到Redis中 使用Hash来保存(注意StringRedisTemplate中要求value中的对象所有字段都必须得为String类型)
         // 生成随机的Token作为key
@@ -118,26 +126,158 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ResultDTO<User> getUserById(Long userId) {
-        return null;
+        if (Objects.isNull(userId)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);
+        }
+        log.info("UserService.getUserById query user=>userId:{}",userId);
+
+        User user = userMapper.selectById(userId);
+        if (Objects.isNull(user)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.DB_QUERY_NO_DATA);
+        }
+
+        return ResultDTO.getSuccessResult(user);
     }
 
 
     @Override
     public ResultDTO<String> loginByPassword(LoginDTO loginDTO) {
+        if (Objects.isNull(loginDTO)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);
+        }
+        log.info("UserService,loginByPassword user is login by password=>user:{}",JSONUtil.toJsonStr(loginDTO));
+
+        String phone = loginDTO.getPhone();
+        String password = loginDTO.getPhone();
+        // 校验手机号
+        if (StrUtil.isBlank(password) || RegexUtils.phoneIsInvalid(phone)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PHONE_IS_INVALID);
+        }
+
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getPhone,phone).eq(User::getStatus,"NORMAL");
+        User dbUser = userMapper.selectOne(wrapper);
+        if (Objects.isNull(dbUser)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.USER_NOT_EXIST);
+        }
+
+        // 校验密码
+        if (RegexUtils.passwordIsInvalid(password)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PASSWORD_ERROR);
+        }
+
+        Boolean passwordMatch = PasswordEncoder.isMatch(password,dbUser.getPassword());
+        if (!passwordMatch) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PASSWORD_ERROR);
+        }
+        // 同样也存入Redis中，生成token
+        UserDTO userDTO = new UserDTO();
+        BeanUtil.copyProperties(dbUser,userDTO);
+        Map<String, Object> userMap = BeanUtil.beanToMap(userDTO, new HashMap<>(),
+                CopyOptions.create()
+                        .setIgnoreNullValue(true)
+                        .setFieldValueEditor((key, value) -> value.toString()));
+        // 生成token，存入redis中
+        String token = UUID.fastUUID().toString(true);
+        String tokenKey = RedisKeys.LOGIN_USER_KEY + token;
+        stringRedisTemplate.opsForHash().putAll(tokenKey,userMap);
+        stringRedisTemplate.expire(tokenKey,RedisKeys.LOGIN_USER_TTL,TimeUnit.MINUTES);
+
         return null;
     }
 
     @Override
     public ResultDTO<Boolean> register(RegisterDTO registerDTO) {
+        if (Objects.isNull(registerDTO)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);
+        }
+        log.info("UserService,register=>register info:{}",JSONUtil.toJsonStr(registerDTO));
         String phone = registerDTO.getPhone();
         String password = registerDTO.getPhone();
+        String nickName = registerDTO.getNickName();
+        if (StrUtil.isBlank(phone) || RegexUtils.phoneIsInvalid(phone)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PHONE_IS_INVALID);
+        }
 
-        return null;
+        if (StrUtil.isBlank(password) || RegexUtils.passwordIsInvalid(password)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PASSWORD_ERROR);
+        }
+
+        if (StrUtil.isBlank(nickName)) {
+            String randomName = SystemConstants.USER_NAME_PREFIX + RandomUtil.randomNumbers(10);
+            registerDTO.setNickName(randomName);
+        }
+        // 密码加密
+        String encodePassword = PasswordEncoder.encode(password);
+        User user = new User();
+        BeanUtil.copyProperties(registerDTO,user);
+        user.setPassword(encodePassword);
+        user.setIcon("");
+        try {
+            Integer insertCount = userMapper.insert(user);
+            if (insertCount != 1) {
+                return ResultDTO.getErrorResult(ErrorResultConstants.DB_ERROR);
+            }
+        } catch (Exception e) {
+            log.info("DataBase error");
+        }
+
+        return ResultDTO.getSuccessResult(Boolean.TRUE);
     }
 
     @Override
     public ResultDTO<Boolean> forgetPassword(RegisterDTO registerDTO) {
-        return null;
+        if (Objects.isNull(registerDTO)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);
+        }
+        log.info("UserService.forgetPassword=>register:{}",JSONUtil.toJsonStr(registerDTO));
+
+        String phone = registerDTO.getPassword();
+        String password = registerDTO.getPassword();
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getPhone,phone).eq(User::getStatus,"NORMAL");
+        User user = userMapper.selectOne(wrapper);
+
+        if (Objects.isNull(user)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.USER_NOT_EXIST);
+        }
+        // 密码与数据库中不一致
+        if (PasswordEncoder.isMatch(password,user.getPassword())) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PASSWORD_ERROR);
+        }
+
+        if (password.equals(registerDTO.getNewPassword())) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PASSWORD_NOT_EQUAL);
+        }
+
+        String encodePassword = PasswordEncoder.encode(password);
+        user.setPassword(encodePassword);
+        try {
+            Integer updateCount = userMapper.update(user, wrapper);
+            if (updateCount != 1) {
+                return ResultDTO.getErrorResult(ErrorResultConstants.DB_ERROR);
+            }
+        } catch (Exception e) {
+            log.info("DataBase error");
+        }
+
+        return ResultDTO.getSuccessResult(Boolean.TRUE);
+    }
+
+    @Override
+    public ResultDTO<Boolean> updateUser(User user) {
+        if (Objects.isNull(user)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);
+        }
+
+        User dbUser = userMapper.selectById(user.getId());
+        if (Objects.isNull(dbUser)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.USER_NOT_EXIST);
+        }
+
+        userMapper.updateById(user);
+
+        return ResultDTO.getSuccessResult(Boolean.TRUE);
     }
 
     private User createUserWithPhone(String phone) {
