@@ -18,9 +18,9 @@ public interface IShopService {
      *
      * @author this.FrankZhou
      * @param shop 店铺信息
-     * @return Long 店铺id
+     * @return String 请求结果
      */
-    ResultDTO<Long> updateShop(Shop shop);
+    ResultDTO<String> updateShop(Shop shop);
 
     /**
      * 保存店铺信息
