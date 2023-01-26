@@ -56,6 +56,7 @@ public class ShopTests {
         for (Shop dbShop:shopList) {
             String hashKey = RedisKeys.CACHE_SHOP_KEY + dbShop.getId();
             if (Objects.isNull(dbShop)) continue;
+            // todo 批量导入的时候有空值，导致类型转换失败
             Map<String, Object> shopMap = BeanUtil.beanToMap(dbShop, new HashMap<>(),
                     CopyOptions.create()
                             .setIgnoreNullValue(true)

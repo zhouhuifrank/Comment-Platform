@@ -46,18 +46,12 @@ public class ShopTypeTests {
     public void testListToString() {
         // 将List中每一个元素都序列化
         List<ShopType> shopTypeList = shopTypeMapper.queryAllShopTypeList();
-        List<String> redisList = shopTypeList.stream().map(item -> {
-            String shopJson = JSONUtil.toJsonStr(item);
-            return shopJson;
-        }).collect(Collectors.toList());
+        List<String> redisList = shopTypeList.stream()
+                .map(JSONUtil::toJsonStr)
+                .collect(Collectors.toList());
         redisList.stream().forEach(System.out::println);
 
         String listKey = RedisKeys.CACHE_SHOP_TYPE_KEY;
-        /*
-        redisList.forEach(item -> {
-            stringRedisTemplate.opsForList().leftPush(listKey,item);
-        });
-        */
         stringRedisTemplate.opsForList().leftPushAll(listKey,redisList);
 
         log.info("redis缓存成功!");

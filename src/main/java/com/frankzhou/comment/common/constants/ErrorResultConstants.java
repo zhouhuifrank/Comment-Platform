@@ -10,6 +10,8 @@ public class ErrorResultConstants {
 
     public static final String PHONE_IS_INVALID = "手机号不合法";
 
+    public static final String PHONE_IS_DUPLICATED = "手机号重复";
+
     public static final String CODE_ERROR = "验证码错误";
 
     public static final String PASSWORD_ERROR = "密码错误";

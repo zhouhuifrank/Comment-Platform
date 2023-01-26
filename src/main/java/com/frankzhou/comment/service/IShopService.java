@@ -23,6 +23,15 @@ public interface IShopService {
     ResultDTO<Long> updateShop(Shop shop);
 
     /**
+     * 保存店铺信息
+     *
+     * @author this.FrankZhou
+     * @param shop 店铺信息
+     * @return Long 店铺id
+     */
+    ResultDTO<Long> saveShop(Shop shop);
+
+    /**
      * 通过id查询商铺并存入Redis缓存 Hash
      * 对于商铺数据，使用手动更新+设置过期时间的方式来更新缓存
      *

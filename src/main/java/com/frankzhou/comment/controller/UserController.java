@@ -36,7 +36,7 @@ public class UserController {
     // --------------------------前端页面接口-------------------------
 
     @PostMapping("/code")
-    public ResultDTO<Boolean> sendCode(@RequestParam("phone") String phone) {
+    public ResultDTO<String> sendCode(@RequestParam("phone") String phone) {
         return userService.sendCode(phone);
     }
 
@@ -73,17 +73,22 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResultDTO<Boolean> register(@RequestBody RegisterDTO registerDTO) {
+    public ResultDTO<String> register(@RequestBody RegisterDTO registerDTO) {
         return userService.register(registerDTO);
     }
 
+    @PostMapping("/updatePassword")
+    public ResultDTO<String> updatePassword(@RequestBody RegisterDTO registerDTO) {
+        return userService.updatePassword(registerDTO);
+    }
+
     @PostMapping("/forgetPassword")
-    public ResultDTO<Boolean> forgetPassword(@RequestBody RegisterDTO registerDTO) {
+    public ResultDTO<String> forgetPassword(@RequestBody RegisterDTO registerDTO) {
         return userService.forgetPassword(registerDTO);
     }
 
     @PostMapping("/updateUser")
-    public ResultDTO<Boolean> updateUser(@RequestBody User user) {
+    public ResultDTO<String> updateUser(@RequestBody User user) {
         return userService.updateUser(user);
     }
 

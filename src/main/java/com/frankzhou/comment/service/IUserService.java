@@ -24,7 +24,7 @@ public interface IUserService {
      * @param phone 手机号
      * @return ResultDTO
      */
-    ResultDTO<Boolean> sendCode(String phone);
+    ResultDTO<String> sendCode(String phone);
 
     /**
      * 用户登录 手机号+验证码登录
@@ -49,27 +49,36 @@ public interface IUserService {
      *
      * @author this.FrankZhou
      * @param registerDTO 注册请求参数
-     * @return Boolean true->修改成功/false->修改失败
+     * @return string 请求信息
      */
-    ResultDTO<Boolean> register(RegisterDTO registerDTO);
+    ResultDTO<String> register(RegisterDTO registerDTO);
 
     /**
-     * 忘记密码 修改密码
+     * 修改密码
      *
      * @author this.FrankZhou
      * @param registerDTO 重置密码请求参数
-     * @return Boolean true->修改成功/false->修改失败
+     * @return string 请求信息
      */
-    ResultDTO<Boolean> forgetPassword(RegisterDTO registerDTO);
+    ResultDTO<String> updatePassword(RegisterDTO registerDTO);
+
+    /**
+     * 忘记密码
+     *
+     * @author this.FrankZhou
+     * @param registerDTO 重置密码请求参数
+     * @return string 请求信息
+     */
+    ResultDTO<String> forgetPassword(RegisterDTO registerDTO);
 
     /**
      * 更新用户信息
      *
      * @author this.FrankZhou
      * @param user 修改后的用户信息
-     * @return Boolean true->修改成功/false->修改失败
+     * @return string 请求信息
      */
-    ResultDTO<Boolean> updateUser(User user);
+    ResultDTO<String> updateUser(User user);
 
     /**
      * 获取用户的个人信息

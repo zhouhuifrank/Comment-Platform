@@ -15,6 +15,9 @@ import java.nio.charset.StandardCharsets;
 public class PasswordEncoder {
 
     public static String encode(String password) {
+        if (StrUtil.isBlank(password)) {
+            return null;
+        }
         // 20位的随机盐
         String salt = RandomUtil.randomString(20);
 

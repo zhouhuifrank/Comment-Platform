@@ -24,9 +24,10 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 配置Token刷新拦截器 order用来设置优先级
+        // 配置Token刷新拦截器 order用来设置优先级 刷新token拦截器拦截所有的路径
         registry.addInterceptor(new RefreshTokenInterceptor(stringRedisTemplate)).order(0);
         // 配置登录拦截器
+        /*
         registry.addInterceptor(new LoginInterceptor())
                 .excludePathPatterns(  // 排除路径，不拦截
                         "/shop/**",
@@ -36,6 +37,12 @@ public class MvcConfig implements WebMvcConfigurer {
                         "/blog/hot",
                         "/user/code",
                         "/user/login"
+                ).order(1);
+        */
+        // 为了测试方便，所有路径都不拦截
+        registry.addInterceptor(new LoginInterceptor())
+                .excludePathPatterns(
+                        "/**"
                 ).order(1);
     }
 }

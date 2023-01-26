@@ -76,6 +76,25 @@ public class ShopServiceImpl implements IShopService {
     }
 
     @Override
+    public ResultDTO<Long> saveShop(Shop shop) {
+        if (Objects.isNull(shop)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);
+        }
+        log.info("ShopService.saveShop=>正在保存店铺信息:{}",JSONUtil.toJsonStr(shop));
+
+        try {
+            Integer insertCount = shopMapper.insert(shop);
+            if (insertCount != 1) {
+                return ResultDTO.getErrorResult(ErrorResultConstants.DB_ERROR);
+            }
+        } catch (Exception e) {
+            log.info("DataBase error");
+        }
+
+        return ResultDTO.getSuccessResult(shop.getId());
+    }
+
+    @Override
     public ResultDTO<Shop> getShopByIdHash(Long id) {
         if (Objects.isNull(id)) {
             return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);

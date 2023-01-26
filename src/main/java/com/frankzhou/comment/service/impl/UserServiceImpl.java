@@ -50,7 +50,7 @@ public class UserServiceImpl implements IUserService {
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
-    public ResultDTO<Boolean> sendCode(String phone) {
+    public ResultDTO<String> sendCode(String phone) {
         // 校验手机号
         if (StringUtils.isEmpty(phone) || RegexUtils.phoneIsInvalid(phone)) {
             return ResultDTO.getErrorResult(ErrorResultConstants.PHONE_IS_INVALID);
@@ -65,7 +65,7 @@ public class UserServiceImpl implements IUserService {
 
         log.info("手机验证码发送成功, 验证码: {}",verifyCode);
 
-        return ResultDTO.getSuccessResult();
+        return ResultDTO.getSuccessResult(SystemConstants.REQUEST_SUCCESS);
     }
 
     @Override
@@ -114,6 +114,7 @@ public class UserServiceImpl implements IUserService {
         stringRedisTemplate.opsForHash().putAll(tokenKey,userMap);
         stringRedisTemplate.expire(RedisKeys.LOGIN_USER_KEY+token,RedisKeys.LOGIN_USER_TTL,TimeUnit.MINUTES);
 
+        log.info("用户{}登录成功",user.getId());
         // 将token返回给前端
         return ResultDTO.getSuccessResult(token);
     }
@@ -139,6 +140,7 @@ public class UserServiceImpl implements IUserService {
         return ResultDTO.getSuccessResult(user);
     }
 
+    // ----------------------------后端管理接口----------------------------
 
     @Override
     public ResultDTO<String> loginByPassword(LoginDTO loginDTO) {
@@ -183,20 +185,29 @@ public class UserServiceImpl implements IUserService {
         stringRedisTemplate.opsForHash().putAll(tokenKey,userMap);
         stringRedisTemplate.expire(tokenKey,RedisKeys.LOGIN_USER_TTL,TimeUnit.MINUTES);
 
-        return null;
+        return ResultDTO.getSuccessResult(SystemConstants.REQUEST_SUCCESS);
     }
 
     @Override
-    public ResultDTO<Boolean> register(RegisterDTO registerDTO) {
+    public ResultDTO<String> register(RegisterDTO registerDTO) {
         if (Objects.isNull(registerDTO)) {
             return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);
         }
         log.info("UserService,register=>register info:{}",JSONUtil.toJsonStr(registerDTO));
+
         String phone = registerDTO.getPhone();
         String password = registerDTO.getPhone();
         String nickName = registerDTO.getNickName();
+        // 校验手机号是否合法
         if (StrUtil.isBlank(phone) || RegexUtils.phoneIsInvalid(phone)) {
             return ResultDTO.getErrorResult(ErrorResultConstants.PHONE_IS_INVALID);
+        }
+        // 校验手机号是否重复 即用户是否重复注册
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getPhone,phone).eq(User::getStatus,"NORMAL");
+        User dbUser = userMapper.selectOne(wrapper);
+        if (!Objects.isNull(dbUser)) {
+            return ResultDTO.getErrorResult(ErrorResultConstants.PHONE_IS_DUPLICATED);
         }
 
         if (StrUtil.isBlank(password) || RegexUtils.passwordIsInvalid(password)) {
@@ -204,6 +215,7 @@ public class UserServiceImpl implements IUserService {
         }
 
         if (StrUtil.isBlank(nickName)) {
+            // 昵称为空，先随机生成默认昵称
             String randomName = SystemConstants.USER_NAME_PREFIX + RandomUtil.randomNumbers(10);
             registerDTO.setNickName(randomName);
         }
@@ -222,17 +234,18 @@ public class UserServiceImpl implements IUserService {
             log.info("DataBase error");
         }
 
-        return ResultDTO.getSuccessResult(Boolean.TRUE);
+        return ResultDTO.getSuccessResult(SystemConstants.REQUEST_SUCCESS);
     }
 
+    // TODO 重设密码可能有问题
     @Override
-    public ResultDTO<Boolean> forgetPassword(RegisterDTO registerDTO) {
+    public ResultDTO<String> updatePassword(RegisterDTO registerDTO) {
         if (Objects.isNull(registerDTO)) {
             return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);
         }
         log.info("UserService.forgetPassword=>register:{}",JSONUtil.toJsonStr(registerDTO));
 
-        String phone = registerDTO.getPassword();
+        String phone = registerDTO.getPhone();
         String password = registerDTO.getPassword();
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getPhone,phone).eq(User::getStatus,"NORMAL");
@@ -261,12 +274,18 @@ public class UserServiceImpl implements IUserService {
             log.info("DataBase error");
         }
 
-        return ResultDTO.getSuccessResult(Boolean.TRUE);
+        return ResultDTO.getSuccessResult(SystemConstants.REQUEST_SUCCESS);
     }
 
     @Override
-    public ResultDTO<Boolean> updateUser(User user) {
-        if (Objects.isNull(user)) {
+    public ResultDTO<String> forgetPassword(RegisterDTO registerDTO) {
+        return null;
+    }
+
+    // TODO mybatis-plus的updateById方法会把icon覆盖掉
+    @Override
+    public ResultDTO<String> updateUser(User user) {
+        if (Objects.isNull(user) || Objects.isNull(user.getId())) {
             return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);
         }
 
@@ -277,7 +296,7 @@ public class UserServiceImpl implements IUserService {
 
         userMapper.updateById(user);
 
-        return ResultDTO.getSuccessResult(Boolean.TRUE);
+        return ResultDTO.getSuccessResult(SystemConstants.REQUEST_SUCCESS);
     }
 
     private User createUserWithPhone(String phone) {
