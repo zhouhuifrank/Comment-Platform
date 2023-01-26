@@ -12,18 +12,16 @@ public interface RedisLock {
      * 尝试获取锁
      *
      * @author this.FrankZhou
-     * @param key 分布式锁的key
      * @param timeSec 锁的有效时间
      * @return boolean true->获取锁成功/false->获取锁失败
      */
-    boolean tryLock(String key,Long timeSec);
+    boolean tryLock(Long timeSec);
 
     /**
      * 释放分布式锁
      *
      * @author this.FrankZhou
-     * @param key 分布式锁的key
      * @return void
      */
-    void unlock(String key);
+    void unlock();
 }
