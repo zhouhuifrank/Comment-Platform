@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author This.FrankZhou
  * @version 1.0
- * @description 店铺信息控制器
+ * @description 店铺信息控制器  查询店铺缓存的各种方案
  * @date 2023-01-15
  */
 @RestController
@@ -26,15 +26,34 @@ public class ShopController {
         return shopService.getShopByIdString(id);
     }
 
-    @PostMapping
-    public ResultDTO<Long> saveShop(@RequestBody Shop shop) {
-        return null;
+    @GetMapping("/hash/{id}")
+    public ResultDTO<Shop> getShopByIdHash(@PathVariable("id") Long id) {
+        return shopService.getShopByIdHash(id);
     }
 
-    @PutMapping
-    public ResultDTO<Boolean> updateShop(@RequestBody Shop shop) {
+    @GetMapping("/penetrate/{id}")
+    public ResultDTO<Shop> getShopByIdPenetrate(@PathVariable("id") Long id) {
+        return shopService.getShopWithPenetrate(id);
+    }
 
-        return null;
+    @GetMapping("/mutex/{id}")
+    public ResultDTO<Shop> getShopByIdMutex(@PathVariable("id") Long id) {
+        return shopService.getShopWithMutex(id);
+    }
+
+    @GetMapping("/logic/{id}")
+    public ResultDTO<Shop> getShopByIdLogic(@PathVariable("id") Long id) {
+        return shopService.getShopWithLogicTime(id);
+    }
+
+    @PostMapping("/add")
+    public ResultDTO<Long> saveShop(@RequestBody Shop shop) {
+        return shopService.saveShop(shop);
+    }
+
+    @PostMapping("/update")
+    public ResultDTO<String> updateShop(@RequestBody Shop shop) {
+        return shopService.updateShop(shop);
     }
 
     @GetMapping("/of/type")

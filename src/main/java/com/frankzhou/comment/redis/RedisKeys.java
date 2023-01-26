@@ -24,7 +24,7 @@ public class RedisKeys {
 
     public static final String CACHE_NULL_KEY = "cache:null:";
 
-    public static final Long CACHE_NULL_TTL = 10L;
+    public static final Long CACHE_NULL_TTL = 30L;
 
     public static final String MUTEX_LOCK_KEY = "mutex:lock:";
 
