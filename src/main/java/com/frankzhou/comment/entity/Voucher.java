@@ -50,4 +50,13 @@ public class Voucher extends BaseEntity implements Serializable {
     @TableField(value = "status")
     private Integer status;
 
+    @TableField(exist = false)
+    private Integer stock;
+
+    @TableField(exist = false)
+    private LocalDateTime beginTime;
+
+    @TableField(exist = false)
+    private LocalDateTime endTime;
+
 }
