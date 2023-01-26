@@ -21,4 +21,23 @@
         from tb_shop_type;
     </select>
 
+    <insert id="batchInsert" parameterType="list">
+        insert into
+        tb_shop_type(
+            `id`,
+            `name`,
+            `icon`,
+            `sort`,
+            `create_time`,
+            `update_time`
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.name},#{item.icon},#{item.sort},#{item.createTime},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <update id="batchUpdate" keyProperty="list">
+    </update>
+
 </mapper>
