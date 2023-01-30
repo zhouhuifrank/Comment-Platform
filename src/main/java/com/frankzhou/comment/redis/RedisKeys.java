@@ -28,5 +28,9 @@ public class RedisKeys {
 
     public static final String MUTEX_LOCK_KEY = "mutex:lock:";
 
-    private static final Long MUTEX_LOCK_TTL = 10L;
+    public static final Long MUTEX_LOCK_TTL = 10L;
+
+    public static final String VOUCHER_STOCK_KEY = "voucher:stock:";
+
+    public static final String VOUCHER_LIST_KEY = "voucher:list:";
 }

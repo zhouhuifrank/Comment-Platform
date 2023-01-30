@@ -4,10 +4,38 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.frankzhou.comment.mapper.VoucherOrderMapper">
 
-    <resultMap id="userMap" type="com.frankzhou.comment.entity.VoucherOrder">
+    <resultMap id="voucherOrderMap" type="com.frankzhou.comment.entity.VoucherOrder">
+        <id column="id" property="id" javaType="Long"/>
+        <result column="user_id" property="userId" javaType="Long"/>
+        <result column="voucher_id" property="voucherId" javaType="Long"/>
+        <result column="pay_type" property="payType" javaType="Integer"/>
+        <result column="status" property="status" javaType="Integer"/>
+        <result column="pay_time" property="payTime" javaType="java.time.LocalDateTime"/>
+        <result column="use_time" property="useTime" javaType="java.time.LocalDateTime"/>
+        <result column="refund_time" property="refundTime" javaType="java.time.LocalDateTime"/>
     </resultMap>
 
-    <sql id="baseColumn">
+    <sql id="queryColumn">
+        `id`,`user_id`,`voucher_id`,`pay_type`,`status`,`pay_time`,`use_time`,`refund_time`
     </sql>
+
+    <sql id="insertColumn">
+        `id`,`user_id`,`voucher_id`,`pay_type`,`status`,`pay_time`,
+        `create_time`,`pay_time`,`use_time`,`refund_time`,`update_time`
+    </sql>
+
+    <select id="selectOrderCount" resultMap="voucherOrderMap">
+        select
+        count(id)
+        from tb_voucher_order
+        <where>
+            <if test="userId != null and userId != ''">
+                user_id = #{userId}
+            </if>
+            <if test="voucherId != null and voucher_id != ''">
+                and voucher_id = #{voucherId}
+            </if>
+        </where>
+    </select>
 
 </mapper>

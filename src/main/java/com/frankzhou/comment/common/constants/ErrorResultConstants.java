@@ -20,6 +20,12 @@ public class ErrorResultConstants {
 
     public static final String SHOP_NOT_EXIST = "店铺不存在";
 
+    public static final String NOT_IN_VOUCHER_TIME = "不在优惠卷抢购时间段内";
+
+    public static final String STOCK_NOT_ENOUGH = "库存不足";
+
+    public static final String DUPLICATED_VOUCHER_ORDER = "订单已经存在，不要重复下单";
+
     public static final String USER_NOT_EXIST = "用户不存在";
 
     public static final String DB_QUERY_NO_DATA = "数据库数据不存在";

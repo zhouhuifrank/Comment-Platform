@@ -3,6 +3,7 @@ package com.frankzhou.comment.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.frankzhou.comment.entity.VoucherOrder;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @author This.FrankZhou
@@ -12,4 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface VoucherOrderMapper extends BaseMapper<VoucherOrder> {
+
+    Integer selectOrderCount(@Param("userId") Long userId, @Param("voucherId") Long voucherId);
 }

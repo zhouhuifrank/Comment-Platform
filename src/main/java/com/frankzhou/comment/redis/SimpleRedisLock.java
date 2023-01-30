@@ -1,6 +1,14 @@
 package com.frankzhou.comment.redis;
 
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.BooleanUtil;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+
+import javax.annotation.Resource;
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author This.FrankZhou
@@ -10,19 +18,52 @@ import cn.hutool.core.lang.UUID;
  */
 public class SimpleRedisLock implements RedisLock {
 
-    private static final String DISTRIBUTED_LOCK = "distribution:key:";
+    private StringRedisTemplate stringRedisTemplate;
 
-    private static final String NAME = "seckill";
+    private String name;
+
+    private static final String DISTRIBUTED_LOCK = "distribution:key:";
 
     private static final String ID_PREFIX = UUID.randomUUID().toString(true) + "-";
 
+    private static final DefaultRedisScript<Long> UNLOCK_SCRIPT;
+    static {
+        UNLOCK_SCRIPT = new DefaultRedisScript<>();
+        UNLOCK_SCRIPT.setLocation(new ClassPathResource("unlock.lua"));
+        UNLOCK_SCRIPT.setResultType(Long.class);
+    }
+
+    public SimpleRedisLock(String name,StringRedisTemplate stringRedisTemplate) {
+        this.name = name;
+        this.stringRedisTemplate = stringRedisTemplate;
+    }
+
     @Override
     public boolean tryLock(Long timeSec) {
-        return false;
+        String distributedKey = DISTRIBUTED_LOCK + name;
+        String threadId = ID_PREFIX + Thread.currentThread().getId();
+        Boolean flag = stringRedisTemplate.opsForValue().setIfAbsent(distributedKey, threadId, timeSec, TimeUnit.SECONDS);
+        return BooleanUtil.isTrue(flag);
     }
 
     @Override
     public void unlock() {
-
+        // 调用lua脚本保证多条命令的原子性
+        stringRedisTemplate.execute(
+                UNLOCK_SCRIPT,
+                Collections.singletonList(DISTRIBUTED_LOCK+name),
+                ID_PREFIX + Thread.currentThread().getId());
     }
+
+    /*
+    @Override
+    public void unlock() {
+        String distributedKey = DISTRIBUTED_LOCK + name;
+        String lock = stringRedisTemplate.opsForValue().get(distributedKey);
+        String threadId = ID_PREFIX + Thread.currentThread().getId();
+        if (threadId.equals(lock)) {
+            stringRedisTemplate.delete(distributedKey);
+        }
+    }
+    */
 }
