@@ -15,6 +15,7 @@ import com.frankzhou.comment.service.IVoucherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -56,18 +57,21 @@ public class VoucherServiceImpl implements IVoucherService {
     }
 
     @Override
+    @Transactional
     public ResultDTO<Long> addSeckillVoucher(Voucher voucher) {
         if (Objects.isNull(voucher)) {
             return ResultDTO.getErrorResult(ErrorResultConstants.PARAMS_ERROR);
         }
 
+        // 添加秒杀优惠卷信息
         SeckillVoucher seckillVoucher = new SeckillVoucher();
         seckillVoucher.setVoucherId(voucher.getId());
         seckillVoucher.setStock(voucher.getStock());
         seckillVoucher.setBeginTime(voucher.getBeginTime());
         seckillVoucher.setEndTime(voucher.getEndTime());
-        Integer insertCount = seckillVoucherMapper.insert(seckillVoucher);
-        if (insertCount < 1) {
+        Integer insertCount1 = seckillVoucherMapper.insert(seckillVoucher);
+        Integer insertCount2 = voucherMapper.insert(voucher);
+        if (insertCount1 < 1 || insertCount2 < 1) {
             return ResultDTO.getErrorResult(ErrorResultConstants.DB_ERROR);
         }
 

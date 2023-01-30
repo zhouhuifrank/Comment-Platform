@@ -47,7 +47,7 @@ public class Voucher extends BaseEntity implements Serializable {
     @TableField(value = "type")
     private Integer type;
 
-    @TableField(value = "status")
+    @TableField(value = "status",fill = FieldFill.INSERT)
     private Integer status;
 
     // 秒杀优惠卷信息

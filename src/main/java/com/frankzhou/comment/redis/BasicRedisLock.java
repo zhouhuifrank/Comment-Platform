@@ -17,20 +17,23 @@ public class BasicRedisLock implements RedisLock {
 
     private static final String DISTRIBUTED_LOCK = "distribution:key:";
 
-    private static final String NAME = "seckill";
-
     private static final String ID_PREFIX = UUID.randomUUID().toString(true) + "-";
 
-
-    @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    private String name;
+
+    public BasicRedisLock(String name,StringRedisTemplate stringRedisTemplate) {
+        this.name = name;
+        this.stringRedisTemplate = stringRedisTemplate;
+    }
 
     @Override
     public boolean tryLock(Long timeSec) {
         // 存入线程标识号
         String threadId = ID_PREFIX + Thread.currentThread().getId();
         // 获取锁
-        Boolean lock = stringRedisTemplate.opsForValue().setIfAbsent(DISTRIBUTED_LOCK + NAME, threadId, timeSec, TimeUnit.SECONDS);
+        Boolean lock = stringRedisTemplate.opsForValue().setIfAbsent(DISTRIBUTED_LOCK+name, threadId, timeSec, TimeUnit.SECONDS);
 
         return BooleanUtil.isTrue(lock);
     }
@@ -40,10 +43,10 @@ public class BasicRedisLock implements RedisLock {
         // 获取自己的线程标识
         String threadId = ID_PREFIX + Thread.currentThread().getId();
         // 获取锁中的线程标识
-        String lock = stringRedisTemplate.opsForValue().get(DISTRIBUTED_LOCK + NAME);
+        String lock = stringRedisTemplate.opsForValue().get(DISTRIBUTED_LOCK + name);
         // 比较线程标识是否一致
         if (lock.equals(threadId)) {
-            stringRedisTemplate.delete(DISTRIBUTED_LOCK+NAME);
+            stringRedisTemplate.delete(DISTRIBUTED_LOCK+name);
         }
     }
 }

@@ -30,10 +30,10 @@ public class RedisIdGenerator {
      * key使用incr:keyPrefix+date 每天都不是不一样得key，保证id生成器得可用性
      *
      * @author this.FrankZhou
-     * @param keyPrefix key得前缀
+     * @param keyPrefix key的前缀
      * @return id 生成的id
      */
-    private long nextId(String keyPrefix) {
+    public long nextId(String keyPrefix) {
         // 31位时间戳+32位redis自增increment
         LocalDateTime now = LocalDateTime.now();
         long currentSeconds = now.toEpochSecond(ZoneOffset.UTC);

@@ -36,7 +36,7 @@ public class VoucherController {
     }
 
     @GetMapping("/list/{id}")
-    public ResultDTO<List<Voucher>> getVoucherList(@PathVariable("id") String shopId) {
-        return null;
+    public ResultDTO<List<Voucher>> getVoucherList(@PathVariable("id") Long shopId) {
+        return voucherService.getVoucherList(shopId);
     }
 }

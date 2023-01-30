@@ -28,34 +28,34 @@ public class RedisCache {
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
-    private <T> void setObject(String key, T value, Long time, TimeUnit unit) {
+    public <T> void setObject(String key, T value, Long time, TimeUnit unit) {
         return;
     }
 
-    private <T> void setWithRandomTime(String key, T value, Long time, TimeUnit unit) {
+    public <T> void setWithRandomTime(String key, T value, Long time, TimeUnit unit) {
 
     }
 
-    private <T> void setNullCache(String key, T value, Long time, TimeUnit unit) {
+    public <T> void setNullCache(String key, T value, Long time, TimeUnit unit) {
 
     }
 
-    private <T> void setWithLogicTime(String key, T value, Long time, TimeUnit unit) {
+    public <T> void setWithLogicTime(String key, T value, Long time, TimeUnit unit) {
         return;
     }
 
-    private <T, ID> T queryWithPenetrate(String key, ID id, T value, Class<T> clazz,
+    public <T, ID> T queryWithPenetrate(String key, ID id, T value, Class<T> clazz,
                                          Function<ID, T> dbCallBack, Long time, TimeUnit unit) {
 
         return null;
     }
 
-    private <T, ID> T queryWithMutex(String key, ID id, T value, Class<T> clazz,
+    public <T, ID> T queryWithMutex(String key, ID id, T value, Class<T> clazz,
                                      Function<ID, T> dbCallBack, Long time, TimeUnit unit) {
         return null;
     }
 
-    private <T, ID> T queryWithLogicTime(String key, ID id, T value, Class<T> clazz,
+    public <T, ID> T queryWithLogicTime(String key, ID id, T value, Class<T> clazz,
                                          Function<ID, T> dbCallBack, Long time, TimeUnit unit) {
         return null;
     }
@@ -69,7 +69,7 @@ public class RedisCache {
      * @param unit 时间单位 秒/分钟/小时
      * @return true->获取锁成功/false->获取锁失败
      */
-    private boolean tryLock(String key, Long time, TimeUnit unit) {
+    public boolean tryLock(String key, Long time, TimeUnit unit) {
         Boolean flag = stringRedisTemplate.opsForValue().setIfAbsent(key,"1",time,unit);
         return BooleanUtil.isTrue(flag);
     }
@@ -81,7 +81,7 @@ public class RedisCache {
      * @param key 锁的key
      * @return void
      */
-    private void unlock(String key) {
+    public void unlock(String key) {
         stringRedisTemplate.delete(key);
     }
 

@@ -5,9 +5,31 @@
 <mapper namespace="com.frankzhou.comment.mapper.SeckillVoucherMapper">
 
     <resultMap id="userMap" type="com.frankzhou.comment.entity.SeckillVoucher">
+        <id column="voucher_id" property="voucherId" javaType="Long"/>
+        <result column="stock" property="stock" javaType="Integer"/>
+        <result column="begin_time" property="beginTime" javaType="java.time.LocalDateTime"/>
+        <result column="end_time" property="endTime" javaType="java.time.LocalDateTime"/>
     </resultMap>
 
-    <sql id="baseColumn">
+    <sql id="queryColumn">
+        `voucher_id`,`stock`,`begin_time`,`end_time`
     </sql>
+
+    <sql id="insertColumn">
+        `voucher_id`,`stock`,`create_time`,`begin_time`,`end_time`,`update_time`
+    </sql>
+
+    <update id="deductStockCount">
+        update tb_seckill_voucher
+        set stock = stock-1
+        <where>
+            <if test="voucherId != null and voucherId != ''">
+                voucher_id = #{voucherId}
+            </if>
+            <if test="stock != null and stock != ''">
+                stock = #{stock}
+            </if>
+        </where>
+    </update>
 
 </mapper>
