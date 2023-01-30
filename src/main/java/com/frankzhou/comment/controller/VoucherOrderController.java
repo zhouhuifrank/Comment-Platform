@@ -1,10 +1,14 @@
 package com.frankzhou.comment.controller;
 
 import com.frankzhou.comment.common.ResultDTO;
+import com.frankzhou.comment.service.IVoucherOrderService;
+import com.frankzhou.comment.service.IVoucherService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
 
 /**
  * @author This.FrankZhou
@@ -15,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/voucher-order")
 public class VoucherOrderController {
+
+    @Resource
+    private IVoucherOrderService orderService;
 
     @PostMapping("/seckill/{id}")
     public ResultDTO<Long> getSeckillOrder(@PathVariable("id") Long voucherId) {
