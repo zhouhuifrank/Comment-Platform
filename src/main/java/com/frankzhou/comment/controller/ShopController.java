@@ -1,6 +1,7 @@
 package com.frankzhou.comment.controller;
 
 import com.frankzhou.comment.common.ResultDTO;
+import com.frankzhou.comment.dto.ShopQueryDTO;
 import com.frankzhou.comment.entity.Shop;
 import com.frankzhou.comment.service.IShopService;
 import org.springframework.web.bind.annotation.*;
@@ -46,14 +47,9 @@ public class ShopController {
         return shopService.getShopWithLogicTime(id);
     }
 
-    @PostMapping("/add")
-    public ResultDTO<Long> saveShop(@RequestBody Shop shop) {
-        return shopService.saveShop(shop);
-    }
-
-    @PostMapping("/update")
-    public ResultDTO<String> updateShop(@RequestBody Shop shop) {
-        return shopService.updateShop(shop);
+    @PostMapping("/page")
+    public ResultDTO<List<Shop>> getShopByPage(@RequestBody ShopQueryDTO queryDTO) {
+        return null;
     }
 
     @GetMapping("/of/type")
@@ -73,4 +69,17 @@ public class ShopController {
     ) {
         return null;
     }
+
+    // ------------------后台管理接口-----------------------
+
+    @PostMapping("/add")
+    public ResultDTO<Long> saveShop(@RequestBody Shop shop) {
+        return shopService.saveShop(shop);
+    }
+
+    @PostMapping("/update")
+    public ResultDTO<String> updateShop(@RequestBody Shop shop) {
+        return shopService.updateShop(shop);
+    }
+
 }
