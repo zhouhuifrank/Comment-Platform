@@ -20,6 +20,10 @@ public class RedisKeys {
 
     public static final Long CACHE_SHOP_TTL = 30L;
 
+    public static final String LOCK_SHOP_LEY = "lock:shop:";
+
+    public static final Long LOCK_SHOP_TTL = 2L;
+
     public static final String CACHE_SHOP_TYPE_KEY = "cache:shop:type:";
 
     public static final String CACHE_NULL_KEY = "cache:null:";

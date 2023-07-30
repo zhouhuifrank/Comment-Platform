@@ -1,5 +1,6 @@
 package com.frankzhou.comment.redis;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
  * @date 2023-01-15
  */
 @Data
+@Builder
 public class RedisData {
     private LocalDateTime expireTime;
     Object data;
